@@ -1,0 +1,17 @@
+# Never commit uploaded data or local test files to the public repo.
+# Real uploads from the website go to your private Netlify dashboard, not here —
+# this is just a safety net so nothing sensitive is ever pushed to GitHub.
+uploads/
+data/
+*.xls
+*.xlsx
+*.csv
+*.json
+!netlify.toml
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/
