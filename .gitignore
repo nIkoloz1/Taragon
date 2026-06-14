@@ -9,6 +9,9 @@ data/
 *.json
 !netlify.toml
 
+# Local preview tooling
+.claude/
+
 # OS / editor noise
 .DS_Store
 Thumbs.db
