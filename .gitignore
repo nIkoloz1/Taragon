@@ -9,6 +9,9 @@ data/
 *.json
 !netlify.toml
 
+# Large source art (the processed logo.png/favicon.png are committed instead)
+kling_*.png
+
 # Local preview tooling
 .claude/
 
