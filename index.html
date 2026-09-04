@@ -315,6 +315,7 @@
       <!-- Netlify form: file uploads land in your private Netlify dashboard, NOT in the repo -->
       <form name="data-drop" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" action="/success.html" id="dropForm">
         <input type="hidden" name="form-name" value="data-drop" />
+        <input type="hidden" name="subject" id="dropSubject" value="New data drop — taragon.ai" />
         <p class="hp"><label>Don't fill this out: <input name="bot-field" /></label></p>
 
         <label class="dropzone" id="dropzone" for="fileInput">
@@ -363,6 +364,7 @@
     <div class="panel reveal">
       <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/success.html" id="contactForm">
         <input type="hidden" name="form-name" value="contact" />
+        <input type="hidden" name="subject" id="contactSubject" value="New message — taragon.ai" />
         <p class="hp"><label>Don't fill this out: <input name="bot-field" /></label></p>
         <div class="two">
           <div class="field">
@@ -427,11 +429,25 @@
 
   /* ---- forms submit NATIVELY to Netlify, then redirect to /success.html ----
      Native multipart POST is the most reliable way for Netlify to capture file
-     uploads (AJAX file posts can drop the file). We only add a "Sending…" state. */
+     uploads (AJAX file posts can drop the file). On submit we also build a
+     descriptive email subject from the actual values (a hidden "subject" field
+     overrides Netlify's UI subject), then show a "Sending…" state. */
+  const fieldVal = (form,n)=>{ const el=form.querySelector(`[name="${n}"]`); return el ? el.value.trim() : ''; };
   ['dropForm','contactForm'].forEach(id=>{
     const form=document.getElementById(id);
     if(!form) return;
     form.addEventListener('submit',()=>{
+      const subj=form.querySelector('input[name="subject"]');
+      if(subj){
+        const email=fieldVal(form,'email');
+        if(id==='dropForm'){
+          const c=fieldVal(form,'company');
+          subj.value=`New data drop${c?` from ${c}`:''}${email?` (${email})`:''}`;
+        }else{
+          const nm=fieldVal(form,'name');
+          subj.value=`New message${nm?` from ${nm}`:''}${email?` (${email})`:''}`;
+        }
+      }
       const btn=form.querySelector('button[type=submit]');
       if(btn){ btn.disabled=true; btn.textContent='Sending…'; }
     });
