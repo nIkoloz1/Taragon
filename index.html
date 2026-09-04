@@ -315,7 +315,7 @@
       <!-- Netlify form: file uploads land in your private Netlify dashboard, NOT in the repo -->
       <form name="data-drop" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" action="/success.html" id="dropForm">
         <input type="hidden" name="form-name" value="data-drop" />
-        <input type="hidden" name="subject" id="dropSubject" value="New data drop — taragon.ai" />
+        <input type="hidden" name="subject" id="dropSubject" value="Data drop submitted — taragon.ai" />
         <p class="hp"><label>Don't fill this out: <input name="bot-field" /></label></p>
 
         <label class="dropzone" id="dropzone" for="fileInput">
@@ -328,13 +328,17 @@
 
         <div class="two">
           <div class="field">
+            <label for="dname">Name *</label>
+            <input id="dname" name="name" type="text" required placeholder="Your name" />
+          </div>
+          <div class="field">
             <label for="company">Company</label>
             <input id="company" name="company" type="text" placeholder="Your store or brand" />
           </div>
-          <div class="field">
-            <label for="email1">Email *</label>
-            <input id="email1" name="email" type="email" required placeholder="you@company.com" />
-          </div>
+        </div>
+        <div class="field">
+          <label for="email1">Email *</label>
+          <input id="email1" name="email" type="email" required placeholder="you@company.com" />
         </div>
         <div class="field">
           <label for="note">Anything we should know? (optional)</label>
@@ -441,8 +445,8 @@
       if(subj){
         const email=fieldVal(form,'email');
         if(id==='dropForm'){
-          const c=fieldVal(form,'company');
-          subj.value=`New data drop${c?` from ${c}`:''}${email?` (${email})`:''}`;
+          const nm=fieldVal(form,'name'), c=fieldVal(form,'company');
+          subj.value=`Data drop submitted from ${nm||email||'someone'}${c?` (${c})`:''}`;
         }else{
           const nm=fieldVal(form,'name');
           subj.value=`New message${nm?` from ${nm}`:''}${email?` (${email})`:''}`;
