@@ -313,7 +313,7 @@
 
     <div class="panel reveal">
       <!-- Netlify form: file uploads land in your private Netlify dashboard, NOT in the repo -->
-      <form name="data-drop" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" id="dropForm">
+      <form name="data-drop" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" action="/success.html" id="dropForm">
         <input type="hidden" name="form-name" value="data-drop" />
         <p class="hp"><label>Don't fill this out: <input name="bot-field" /></label></p>
 
@@ -361,7 +361,7 @@
     </div>
 
     <div class="panel reveal">
-      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactForm">
+      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/success.html" id="contactForm">
         <input type="hidden" name="form-name" value="contact" />
         <p class="hp"><label>Don't fill this out: <input name="bot-field" /></label></p>
         <div class="two">
@@ -425,24 +425,17 @@
   ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag');}));
   dz.addEventListener('drop',e=>add(e.dataTransfer.files));
 
-  /* ---- AJAX submit to Netlify (keeps user on page) ---- */
-  function wire(formId, msgId, btnId, okText){
-    const form=document.getElementById(formId), msg=document.getElementById(msgId), btn=document.getElementById(btnId);
-    const label=btn.textContent;
-    form.addEventListener('submit',async(e)=>{
-      e.preventDefault();
-      msg.className='msg'; btn.disabled=true; btn.textContent='Sending…';
-      try{
-        await fetch('/',{method:'POST',body:new FormData(form)});
-        msg.textContent=okText; msg.className='msg ok';
-        form.reset(); if(formId==='dropForm'){files=[];render();}
-      }catch(err){
-        msg.textContent='Something went wrong — please email nikolozg1997@gmail.com and we’ll sort it.'; msg.className='msg err';
-      }finally{ btn.disabled=false; btn.textContent=label; }
+  /* ---- forms submit NATIVELY to Netlify, then redirect to /success.html ----
+     Native multipart POST is the most reliable way for Netlify to capture file
+     uploads (AJAX file posts can drop the file). We only add a "Sending…" state. */
+  ['dropForm','contactForm'].forEach(id=>{
+    const form=document.getElementById(id);
+    if(!form) return;
+    form.addEventListener('submit',()=>{
+      const btn=form.querySelector('button[type=submit]');
+      if(btn){ btn.disabled=true; btn.textContent='Sending…'; }
     });
-  }
-  wire('dropForm','dropMsg','dropSubmit','Got it — your files are in. We’ll be in touch shortly. ✦');
-  wire('contactForm','contactMsg','contactSubmit','Thanks — your message is on its way. We’ll reply within a day.');
+  });
 </script>
 </body>
 </html>
